@@ -37,7 +37,7 @@ public class WhatsappApiController {
 //        return "https://wa.me/" + phone + "?text=" + encodedMessage;
 
 
-        String myPhone = "994519895227";
+        String myPhone = "994503914838";
 
         String message = "Salam, mən " + app.getName() + " "
                 + app.getSurname()

@@ -49,42 +49,81 @@ public class ExportServiceImpl implements ExportService {
     public byte[] exportApplicationsWord() {
         return buildWord(applicationRepository.findAll());
     }
-
     private byte[] buildExcel(List<ApplicationEntity> lists) {
-       try (Workbook wb= new XSSFWorkbook(); ByteArrayOutputStream out= new ByteArrayOutputStream()){
-         Sheet sheet = wb.createSheet("Applications");
+        try (Workbook wb = new XSSFWorkbook();
+             ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-         writesRow(sheet.createRow(0),HEADERS);
+            Sheet sheet = wb.createSheet("Applications");
 
-         int rowIndex=1;
-         for(int i=0; i<lists.size(); i++) {
-             ApplicationEntity application = lists.get(i);
+            writesRow(sheet.createRow(0), HEADERS);
 
-             String[] rows={
-                     String.valueOf(i+1),
-                     safe(application.getEmail()),
-                     safe(application.getApplicationCode()),
-                     safe(application.getName()),
-                     safe(application.getSurname()),
-                     safe(application.getPhone()),
-                     enumText(application.getStatus()),
-                     enumText(application.getEducationType()),
-                     enumText(application.getField()),
-                     application.getProgram()==null ? "": safe(application.getProgram().getName())
+            int rowIndex = 1;
+            for (int i = 0; i < lists.size(); i++) {
+                ApplicationEntity application = lists.get(i);
 
-             };
-             writesRow(sheet.createRow(rowIndex++), rows);
-         }
-         for(int e=0; e<HEADERS.length; e++) {
-             sheet.autoSizeColumn(e);
-         }
-         wb.write(out);
-         return out.toByteArray();
-       }catch (Exception e){
-           throw new RuntimeException("Excel export xətası:"+e.getMessage());
+                String[] rows = {
+                        String.valueOf(i + 1),
+                        safe(application.getApplicationCode()),
+                        safe(application.getName()),
+                        safe(application.getSurname()),
+                        safe(application.getPhone()),
+                        safe(application.getEmail()),
+                        enumText(application.getField()),
+                        enumText(application.getEducationType()),
+                        enumText(application.getStatus()),
+                        application.getProgram() == null ? "" : safe(application.getProgram().getName())
+                };
 
-       }
+                writesRow(sheet.createRow(rowIndex++), rows);
+            }
+
+            for (int e = 0; e < HEADERS.length; e++) {
+                sheet.autoSizeColumn(e);
+            }
+
+            wb.write(out);
+            return out.toByteArray();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Excel export xətası: " + e.getMessage(), e);
+        }
     }
+
+//    private byte[] buildExcel(List<ApplicationEntity> lists) {
+//       try (Workbook wb= new XSSFWorkbook(); ByteArrayOutputStream out= new ByteArrayOutputStream()){
+//         Sheet sheet = wb.createSheet("Applications");
+//
+//         writesRow(sheet.createRow(0),HEADERS);
+//
+//         int rowIndex=1;
+//         for(int i=0; i<lists.size(); i++) {
+//             ApplicationEntity application = lists.get(i);
+//
+//             String[] rows={
+//                     String.valueOf(i+1),
+//                     safe(application.getEmail()),
+//                     safe(application.getApplicationCode()),
+//                     safe(application.getName()),
+//                     safe(application.getSurname()),
+//                     safe(application.getPhone()),
+//                     enumText(application.getStatus()),
+//                     enumText(application.getEducationType()),
+//                     enumText(application.getField()),
+//                     application.getProgram()==null ? "": safe(application.getProgram().getName())
+//
+//             };
+//             writesRow(sheet.createRow(rowIndex++), rows);
+//         }
+//         for(int e=0; e<HEADERS.length; e++) {
+//             sheet.autoSizeColumn(e);
+//         }
+//         wb.write(out);
+//         return out.toByteArray();
+//       }catch (Exception e){
+//           throw new RuntimeException("Excel export xətası:"+e.getMessage());
+//
+//       }
+//    }
     private byte[] buildWord(List<ApplicationEntity> lists) {
        try(XWPFDocument doc=new XWPFDocument(); ByteArrayOutputStream output=new ByteArrayOutputStream()){
            addTitleName(doc,"Code World Təcrübə və Təqaüd Proqramına qeydiyyatdan keçənlər");
